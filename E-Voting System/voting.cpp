@@ -5,7 +5,7 @@ vector<int>votersList;
 map<int,string>electoralRoll;
 map<string,map<string,string>>candidateList;
 class Administrator{
-    public:
+    public: 
         string username;
         string password;
         bool loginFlag=false;
