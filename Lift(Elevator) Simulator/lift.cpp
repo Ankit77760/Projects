@@ -38,7 +38,7 @@ class Elevator{
                 upWards.pop();
             }
         }
-
+ 
         int getCurrentFloor(){
             return currentFloor;
         }
