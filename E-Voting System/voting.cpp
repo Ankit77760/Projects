@@ -4,6 +4,7 @@ using namespace std;
 vector<int>votersList;
 map<int,string>electoralRoll;
 map<string,map<string,string>>candidateList;
+unordered_map<string,int>voteCount;
 class Administrator{
     public: 
         string username;
@@ -102,9 +103,10 @@ class Administrator{
             for(auto it:candidateList){
                 cout<<it.first<<" ";
                 for(auto itt:it.second){
-                    cout<<itt.first<<" "<<itt.second<<" ";
+                    cout<<itt.first<<" "<<itt.second<<" "<<endl;
                 }
             }
+            cout<<endl;
             cout<<"----------------------Candidate List-----------------"<<endl;
         }
         
@@ -190,6 +192,78 @@ class Administrator{
 };
 
 class User{
+    public:
+        void displayCandidate(map<string,map<string,string>>&candidateList){
+            cout<<"--------------------Candidatee List-----------------------"<<endl;
+            for(auto it:candidateList){
+                cout<<it.first;
+                for(auto itt:it.second){
+                    cout<<itt.first<<" "<<itt.second<<" ";
+                }
+            }
+            cout<<endl<<endl;
+        }
+
+        bool searchNameInElectoralRoll(vector<int>&votersList,int voterNumber){
+            int n=votersList.size();
+            for(int i=0;i<n;i++){
+                if(voterNumber==votersList[i]){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        void menu(){
+            cout<<"1. View Candidate List"<<endl;
+            cout<<"2. Cast Your Vote"<<endl;
+        }
+
+        bool searchCandidate(map<string,map<string,string>>&candidateList,string nameOfCandidate){
+            for(auto it:candidateList){
+                for(auto itt:it.second){
+                    if(itt.first==nameOfCandidate){
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        void display(){
+            int operations;
+            menu();
+            cout<<"Enter The Operation to perform: ";
+            cin>>operations;
+            while(operations!=3){
+                if(operations==1){
+                    displayCandidate(candidateList);
+                }
+                if(operations==2){
+                    int voterNumber;
+                    cout<<"Enter Your Voter Number: ";
+                    cin>>voterNumber;
+                    if(searchNameInElectoralRoll(votersList,voterNumber)){
+                        int password;
+                        cout<<"Enter Your Password To Vote: ";
+                        cin>>password;
+                        if(password==123){
+                            cout<<"Welcome To Vote"<<endl<<endl;
+                            string candidateName;
+                            cout<<"Enter The Name of The Candidate to Vote: ";
+                            cin>>candidateName;
+                            if(searchCandidate(candidateList,candidateName)){
+                                voteCount[candidateName]++;
+                            }
+                        }
+
+                    }
+                }
+                cout<<endl;
+                menu();
+                cin>>operations;
+            }
+        }
 
 };
 
@@ -207,6 +281,13 @@ int main(){
     cout<<"Enter Your Password to Login: ";
     cin>>password;
     a.login(username,password);
+
+    User u;
+    u.display();
+
+    for(auto it:voteCount){
+        cout<<it.first<<" "<<it.second<<" "<<endl;
+    }
 
     return 0;
 }
