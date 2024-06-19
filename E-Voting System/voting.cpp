@@ -58,7 +58,7 @@ class Administrator{
             int voterNumber;
             random_device rd;
             mt19937 gen(rd());
-            uniform_int_distribution<>dis(0,5);
+            uniform_int_distribution<>dis(1000,9999);
             voterNumber=dis(gen);
             if(search(votersList,voterNumber)==false){
                 votersList.push_back(voterNumber);
@@ -86,13 +86,16 @@ class Administrator{
             int idx=1;
             cout<<"----------------------Voter List--------------------"<<endl;
             for(auto it:electoralRoll){
-                cout<<idx++<<" "<<it.first<<" "<<it.second<<endl; 
+                cout<<idx++<<". "<<it.first<<" "<<it.second<<endl; 
             }
             cout<<"----------------------Voter List--------------------"<<endl;
         }
 
         void deletevoters(map<int,string>&electoralRoll,int voterNumber){
-            electoralRoll[voterNumber]="Deleted";
+            auto it=electoralRoll.find(voterNumber);
+            if(it!=electoralRoll.end()){
+                electoralRoll.erase(it);
+            }
             int idx=searchIndex(votersList,voterNumber);
             votersList.erase(votersList.begin()+idx);
             displayVoters(electoralRoll);
@@ -100,8 +103,9 @@ class Administrator{
 
         void displayCandidate(map<string,map<string,string>>&candidateList){
             cout<<"----------------------Candidate List-----------------"<<endl;
+            int i=1;
             for(auto it:candidateList){
-                cout<<it.first<<" ";
+                cout<<i++<<" "<<it.first<<" ";
                 for(auto itt:it.second){
                     cout<<itt.first<<" "<<itt.second<<" "<<endl;
                 }
@@ -125,27 +129,40 @@ class Administrator{
             displayCandidate(candidateList);
         }
 
-        void deleteCandidates(std::map<std::string, std::map<std::string, std::string>>& candidateList) {
+        void deleteCandidates(map<string, map<string, string>>& candidateList) {
             string nameOfCandidate;
             cout << "Enter The Name of Candidate to Delete: ";
             cin >> nameOfCandidate;
 
             bool found = false;
-            for (auto& constituency : candidateList) {
-                auto it = constituency.second.find(nameOfCandidate);
-                if (it != constituency.second.end()) {
-                    constituency.second.erase(it);
-                    cout << "Candidate " << nameOfCandidate << " deleted successfully." <<endl;
-                    found = true;
-                    break;
+            for(auto it=candidateList.begin();it!=candidateList.end();){
+                auto &candidates=it->second;
+                auto candidateIt=candidates.find(nameOfCandidate);
+                if(candidateIt!=candidates.end()){
+                    candidates.erase(candidateIt);
+                    found=true;
+                }
+                if(candidates.empty()){
+                    it=candidateList.erase(it);   
+                }
+                else{
+                    it++;
                 }
             }
-
-            if (!found) {
-                std::cout << "Candidate " << nameOfCandidate << " not found." << std::endl;
+            if(found){
+                cout<<"Candidate Deleted Successfully"<<endl;
             }
+            else{
+                cout<<"Candidate Not Found In Data"<<endl;
+            }
+            displayCandidate(candidateList);
         }   
       
+        void countVote(unordered_map<string,int>&voteCount){
+            for(auto it:voteCount){
+                cout<<it.first<<" "<<it.second<<" "<<endl;
+            }
+        }
 
         void login(string username,string password){
             if(this->username==username && this->password==password){
@@ -179,6 +196,9 @@ class Administrator{
                         if(operations==5){
                             deleteCandidates(candidateList);
                         }
+                        if(operations==6){
+                            countVote(voteCount);
+                        }
                         cout<<endl;
                         display();
                         cin>>operations;
@@ -195,8 +215,9 @@ class User{
     public:
         void displayCandidate(map<string,map<string,string>>&candidateList){
             cout<<"--------------------Candidatee List-----------------------"<<endl;
+            int it=0;
             for(auto it:candidateList){
-                cout<<it.first;
+                cout<<it++<<". "<<it.first<<" ";
                 for(auto itt:it.second){
                     cout<<itt.first<<" "<<itt.second<<" ";
                 }
@@ -267,27 +288,44 @@ class User{
 
 };
 
+void optionsmenu(){
+    cout<<"1. Administrator"<<endl;
+    cout<<"2. User"<<endl;
+}
+
 int main(){
-    Administrator a;
-    cout<<"Enter Your Registration Credentials"<<endl;
-    cout<<endl;
-    a.setAdministrator();
-    cout<<endl;
-    cout<<"Enter Your Login Credentials"<<endl<<endl;
-    string username;
-    cout<<"Enter Your Username to Login: ";
-    cin>>username;
-    string password;
-    cout<<"Enter Your Password to Login: ";
-    cin>>password;
-    a.login(username,password);
+    cout<<"Welcome To Voting Poll"<<endl;
+    int options;
+    cout<<"Kindly Choose Yourself"<<endl;
+    optionsmenu();
+    cin>>options;
 
-    User u;
-    u.display();
-
-    for(auto it:voteCount){
-        cout<<it.first<<" "<<it.second<<" "<<endl;
+    while(options!=3){
+        if(options==1){
+            Administrator a;
+            cout<<"Enter Your Registration Credentials"<<endl;
+            cout<<endl;
+            a.setAdministrator();
+            cout<<endl;
+            cout<<"Enter Your Login Credentials"<<endl<<endl;
+            string username;
+            cout<<"Enter Your Username to Login: ";
+            cin>>username;
+            string password;
+            cout<<"Enter Your Password to Login: ";
+            cin>>password;
+            a.login(username,password);
+        }
+        if(options==2){
+            User u;
+            u.display();
+        }
+        cout<<endl;
+        optionsmenu();
+        cin>>options;
     }
+
+   
 
     return 0;
 }
